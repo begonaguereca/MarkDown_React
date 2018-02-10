@@ -1,36 +1,56 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import List from './components/List.jsx';
+import InputBox from './components/InputBox.jsx';
+import Display from './components/Display.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      items: []
+    this.state = {
+      display: ''
     }
+    this.renderItems = this.renderItems.bind(this);
   }
 
-  componentDidMount() {
-    $.ajax({
-      url: '/items', 
-      success: (data) => {
-        this.setState({
-          items: data
-        })
-      },
-      error: (err) => {
-        console.log('err', err);
-      }
-    });
-  }
+renderItems(e) {
+console.log('e', e)
+  $.ajax({
+    type: "POST",
+    url: '/translate',
+    data: {data: e},
+    success: (data)=> {
+      this.setState({
+        display: data
+      });
+    },
+    error: (err) => {
+      console.log('err', err);
+    }
+  });
+}
 
   render () {
-    return (<div>
-      <h1>Item List</h1>
-      <List items={this.state.items}/>
-    </div>)
-  }
+    return (
+      <div className= "container-fluid">
+
+        <div className="row">
+          <div className="col col-md-12">
+            <h1 className="text-center">Markdown Parser</h1>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col col-md-6">
+            <Display text={this.state.display}/>
+          </div>
+          <div className="col col-md-6">
+            <InputBox renderItems={this.renderItems}/>
+          </div>
+        </div>
+
+    </div>
+  )}
 }
 
 ReactDOM.render(<App />, document.getElementById('app'));
